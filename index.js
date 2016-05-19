@@ -43,7 +43,7 @@ const MPR121_I2CADDR_DEFAULT = 0x5A,
 
 class MPR121 extends EventEmitter {
 
-  constructor(address, bus, irq, interval) [
+  constructor(address, bus, irq, interval) {
 
     super();
 
@@ -219,7 +219,7 @@ class MPR121 extends EventEmitter {
 
   }
 
-  isTouched = function(pin) {
+  isTouched(pin) {
 
     if(! ready) return false;
     if(pin < 0 || pin >= 12) return false;
