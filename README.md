@@ -1,10 +1,10 @@
 # MPR121 Library for Node.js
 
-This library allows you to access a MPR121 breakout using Node.js from a Raspberry Pi or BeagleBone Black.
+Access a [MPR121 breakout](https://www.adafruit.com/product/2024) using Node.js from a Raspberry Pi or BeagleBone Black.
 
 ## Installation
 
-This library requires Node.js v6.0.0 or higher.
+This library requires [Node.js](https://nodejs.org/) v6.0.0 or higher.
 
 ```sh
 $ npm install mpr121
