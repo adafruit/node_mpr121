@@ -69,14 +69,10 @@ class MPR121 extends EventEmitter {
 
     return new Promise((resolve, reject) => {
 
-      setTimeout(() => {
-
-        this.device = i2c.open(this.bus, (err) => {
-          if(err) return reject(err);
-          resolve();
-        });
-
-      }, 100);
+      this.device = i2c.open(this.bus, (err) => {
+        if(err) return reject(err);
+        resolve();
+      });
 
     });
 
@@ -125,10 +121,9 @@ class MPR121 extends EventEmitter {
     return this.readByte(MPR121_CONFIG2)
       .then((c) => {
 
-        return Promise.resolve();
-
-        if(c != 0x24)
-          return Promise.reject(`MPR121 notfound. Check address, bus and wiring. (${c} != 36)`);
+        // TODO figure out why this fails on ras pi
+        // if(c != 0x24)
+        //   return Promise.reject(`MPR121 notfound. Check address, bus and wiring. (${c} != 36)`);
 
         return Promise.resolve();
 
