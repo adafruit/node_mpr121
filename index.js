@@ -92,8 +92,7 @@ class MPR121 extends EventEmitter {
 
   configure() {
 
-    return this.checkDevice()
-      .then(() => this.setThresholds(12, 6))
+      return this.setThresholds(12, 6)
       .then(() => this.writeByte(MPR121_MHDR, 0x01))
       .then(() => this.writeByte(MPR121_NHDR, 0x01))
       .then(() => this.writeByte(MPR121_NCLR, 0x0E))
@@ -112,21 +111,6 @@ class MPR121 extends EventEmitter {
       .then(() => {
         this.ready = true;
         this.emit('ready');
-      });
-
-  }
-
-  checkDevice() {
-
-    return this.readByte(MPR121_CONFIG2)
-      .then((c) => {
-
-        // TODO figure out why this fails on ras pi
-        // if(c != 0x24)
-        //   return Promise.reject(`MPR121 notfound. Check address, bus and wiring. (${c} != 36)`);
-
-        return Promise.resolve();
-
       });
 
   }
