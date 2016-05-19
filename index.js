@@ -57,7 +57,11 @@ class MPR121 extends EventEmitter {
     this.ready = false;
     this.timer = false;
 
-    this.init().then(this.reset).then(this.configure).then(this.startPolling);
+    this.init()
+        .then(this.reset.bind(this))
+        .then(this.configure.bind(this))
+        .then(this.startPolling.bind(this))
+        .catch((err) => this.emit('error', err));
 
   }
 
@@ -65,10 +69,14 @@ class MPR121 extends EventEmitter {
 
     return new Promise((resolve, reject) => {
 
-      this.device = i2c.open(this.bus, (err) => {
-        if(err) return reject(err);
-        resolve();
-      });
+      setTimeout(() => {
+
+        this.device = i2c.open(this.bus, (err) => {
+          if(err) return reject(err);
+          resolve();
+        });
+
+      }, 100);
 
     });
 
@@ -79,45 +87,36 @@ class MPR121 extends EventEmitter {
     return this.writeByte(MPR121_SOFTRESET, 0x63)
       .then(() => {
         return new Promise((resolve, reject) => {
-          setTimeout(resolve, 10);
+          setTimeout(resolve, 100);
         });
       })
-      .then(this.writeByte(MPR121_ECR, 0x00));
+      .then(() => this.writeByte(MPR121_ECR, 0x00));
 
   }
 
   configure() {
 
     return this.checkDevice()
-
-    // Set threshold for touch and release to default values.
-    .then(this.set_thresholds(12, 6))
-
-    // Configure baseline filtering control registers.
-    .then(this.writeByte(MPR121_MHDR, 0x01))
-    .then(this.writeByte(MPR121_NHDR, 0x01))
-    .then(this.writeByte(MPR121_NCLR, 0x0E))
-    .then(this.writeByte(MPR121_FDLR, 0x00))
-    .then(this.writeByte(MPR121_MHDF, 0x01))
-    .then(this.writeByte(MPR121_NHDF, 0x05))
-    .then(this.writeByte(MPR121_NCLF, 0x01))
-    .then(this.writeByte(MPR121_FDLF, 0x00))
-    .then(this.writeByte(MPR121_NHDT, 0x00))
-    .then(this.writeByte(MPR121_NCLT, 0x00))
-    .then(this.writeByte(MPR121_FDLT, 0x00))
-
-    // Set other configuration registers.
-    .then(this.writeByte(MPR121_DEBOUNCE, 0))
-    .then(this.writeByte(MPR121_CONFIG1, 0x10)) // default, 16uA charge current
-    .then(this.writeByte(MPR121_CONFIG2, 0x20)) // 0.5uS encoding, 1ms period
-
-    // Enable all electrodes.
-    .then(this.writeByte(MPR121_ECR, 0x8F)) // start with first 5 bits of baseline tracking
-
-    .then(() => {
-      this.ready = true;
-      this.emit('ready');
-    });
+      .then(() => this.setThresholds(12, 6))
+      .then(() => this.writeByte(MPR121_MHDR, 0x01))
+      .then(() => this.writeByte(MPR121_NHDR, 0x01))
+      .then(() => this.writeByte(MPR121_NCLR, 0x0E))
+      .then(() => this.writeByte(MPR121_FDLR, 0x00))
+      .then(() => this.writeByte(MPR121_MHDF, 0x01))
+      .then(() => this.writeByte(MPR121_NHDF, 0x05))
+      .then(() => this.writeByte(MPR121_NCLF, 0x01))
+      .then(() => this.writeByte(MPR121_FDLF, 0x00))
+      .then(() => this.writeByte(MPR121_NHDT, 0x00))
+      .then(() => this.writeByte(MPR121_NCLT, 0x00))
+      .then(() => this.writeByte(MPR121_FDLT, 0x00))
+      .then(() => this.writeByte(MPR121_DEBOUNCE, 0))
+      .then(() => this.writeByte(MPR121_CONFIG1, 0x10)) // default, 16uA charge current
+      .then(() => this.writeByte(MPR121_CONFIG2, 0x20)) // 0.5uS encoding, 1ms period
+      .then(() => this.writeByte(MPR121_ECR, 0x8F)) // start with first 5 bits of baseline tracking
+      .then(() => {
+        this.ready = true;
+        this.emit('ready');
+      });
 
   }
 
@@ -125,6 +124,8 @@ class MPR121 extends EventEmitter {
 
     return this.readByte(MPR121_CONFIG2)
       .then((c) => {
+
+        return Promise.resolve();
 
         if(c != 0x24)
           return Promise.reject(`MPR121 notfound. Check address, bus and wiring. (${c} != 36)`);
@@ -157,7 +158,7 @@ class MPR121 extends EventEmitter {
     if(! this.interval) return;
 
     this.timer = setInterval(() => {
-      this.touched().then(updateState);
+      this.touched().then(this.updateState.bind(this));
     }, this.interval);
 
   }
@@ -177,7 +178,7 @@ class MPR121 extends EventEmitter {
 
       const current = (touched & (1 << i)) > 0;
 
-      if(previous == current) return;
+      if(previous === current) return;
 
       this.state[i] = current;
 
@@ -211,17 +212,12 @@ class MPR121 extends EventEmitter {
   }
 
   touched() {
-
-    return this.readWord(MPR121_TOUCHSTATUS_L)
-      .then((t) => {
-        return Promise.resolve(t & 0x0FFF);
-      });
-
+    return this.readWord(MPR121_TOUCHSTATUS_L).then((t) => Promise.resolve(t & 0x0FFF));
   }
 
   isTouched(pin) {
 
-    if(! ready) return false;
+    if(! this.ready) return false;
     if(pin < 0 || pin >= 12) return false;
 
     return this.state[pin];
@@ -245,7 +241,7 @@ class MPR121 extends EventEmitter {
 
     return new Promise((resolve, reject) => {
 
-      this.device.readByte(this.address, reg, (err, w) => {
+      this.device.readWord(this.address, reg, (err, w) => {
         if(err) return reject(err);
         resolve(w);
       });
