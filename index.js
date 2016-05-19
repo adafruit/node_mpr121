@@ -1,3 +1,5 @@
+'use strict';
+
 const i2c = require('i2c-bus'),
       EventEmitter = require('events');
 
@@ -125,7 +127,7 @@ class MPR121 extends EventEmitter {
       .then((c) => {
 
         if(c != 0x24)
-          return Promise.reject(`MPR121 Error - device not found. Check address, bus and wiring. (${c} != 36)`);
+          return Promise.reject(`MPR121 notfound. Check address, bus and wiring. (${c} != 36)`);
 
         return Promise.resolve();
 
@@ -266,3 +268,5 @@ class MPR121 extends EventEmitter {
   }
 
 }
+
+exports = module.exports = MPR121;
