@@ -43,13 +43,12 @@ const MPR121_I2CADDR_DEFAULT = 0x5A,
 
 class MPR121 extends EventEmitter {
 
-  constructor(address, bus, irq, interval) {
+  constructor(address, bus, interval) {
 
     super();
 
     this.address = address || MPR121_I2CADDR_DEFAULT;
     this.bus = Number.isInteger(bus) ? bus : 1;
-    this.irq = irq || false;
     this.interval = interval || 100;
 
     this.state = [false, false, false, false, false, false, false, false, false, false, false, false];
