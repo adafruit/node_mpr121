@@ -7,7 +7,8 @@ Access a [MPR121 breakout](https://www.adafruit.com/product/2024) using Node.js 
 This library requires [Node.js](https://nodejs.org/) v6.0.0 or higher.
 
 ```sh
-$ npm install mpr121
+$ npm install adafruit/node_mpr121
+
 ```
 
 ## Example
