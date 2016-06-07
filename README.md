@@ -7,14 +7,13 @@ Access a [MPR121 breakout](https://www.adafruit.com/product/2024) using Node.js 
 This library requires [Node.js](https://nodejs.org/) v6.0.0 or higher.
 
 ```sh
-$ npm install adafruit/node_mpr121
-
+$ npm install adafruit-mpr121
 ```
 
 ## Example
 
 ```js
-const MPR121 = require('mpr121'),
+const MPR121 = require('adafruit-mpr121'),
       mpr121  = new MPR121(0x5A, 1);
 
 // listen for touch events

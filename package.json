@@ -1,7 +1,7 @@
 {
-  "name": "mpr121",
+  "name": "adafruit-mpr121",
   "version": "1.0.0",
-  "description": "Access a MPR121 from Node.js",
+  "description": "Access the MPR121 breakout from Node.js",
   "main": "index.js",
   "repository": {
     "type": "git",
