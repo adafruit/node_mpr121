@@ -10,6 +10,55 @@ This library requires [Node.js](https://nodejs.org/) v6.0.0 or higher.
 $ npm install adafruit-mpr121
 ```
 
+### Detailed Installation for Raspberry Pi
+
+On a Raspberry Pi [configure I2C following these instructions](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c). E.g.
+
+```sh
+sudo apt-get update
+sudo apt full-upgrade -y
+sudo apt-get install i2c-tools
+```
+
+Make sure you follow these [steps to enable autoloading of I2C Kernel module](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c#installing-kernel-support-with-raspi-config-5-4).
+
+Install Node.js if not yet installed, e.g. to install Node v10:
+
+```sh
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+Reboot for above changes to take affect:
+
+```sh
+sudo reboot
+```
+
+You can check Node version like this:
+
+```sh
+node -v
+# v10.11.0
+```
+
+To install `adafruit-mpr121` in your own Node app:
+
+```sh
+mkdir myapp
+cd myapp
+npm init
+npm install adafruit-mpr121 --save
+```
+
+To run node in interactive mode on command line:
+
+```sh
+node
+```
+
+Example code below should now work.
+
 ## Example
 
 ```js
