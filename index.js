@@ -43,7 +43,7 @@ const MPR121_I2CADDR_DEFAULT = 0x5A,
 
 class MPR121 extends EventEmitter {
 
-  constructor(address, bus, interval) {
+  constructor(address, bus, interval, extraSensitive) {
 
     super();
 
@@ -55,6 +55,7 @@ class MPR121 extends EventEmitter {
     this.device = false;
     this.ready = false;
     this.timer = false;
+    this.extraSensitive = extraSensitive||false;
 
     this.init()
         .then(this.reset.bind(this))
@@ -90,19 +91,24 @@ class MPR121 extends EventEmitter {
   }
 
   configure() {
+      let nes = !this.extraSensitive;
 
-      return this.setThresholds(12, 6)
+      return this.setThresholds(nes?12:3, nes?6:1)
+      // Baseline Filtering Control Registers -- RISING
       .then(() => this.writeByte(MPR121_MHDR, 0x01))
       .then(() => this.writeByte(MPR121_NHDR, 0x01))
       .then(() => this.writeByte(MPR121_NCLR, 0x0E))
-      .then(() => this.writeByte(MPR121_FDLR, 0x00))
+      .then(() => this.writeByte(MPR121_FDLR, nes?0x00:0x01)) // filter rate. (0-255, 255 is slowest)
+      // Baseline Filtering Control Registers -- FALLING
       .then(() => this.writeByte(MPR121_MHDF, 0x01))
       .then(() => this.writeByte(MPR121_NHDF, 0x05))
       .then(() => this.writeByte(MPR121_NCLF, 0x01))
-      .then(() => this.writeByte(MPR121_FDLF, 0x00))
+      .then(() => this.writeByte(MPR121_FDLF, nes?0x00:0x40)) // filter rate. (0-255, 255 is slowest, 16-64 seems right for touch through a 1/16" surface)
+      // Baseline Filtering Control Registers -- TOUCHED
       .then(() => this.writeByte(MPR121_NHDT, 0x00))
       .then(() => this.writeByte(MPR121_NCLT, 0x00))
-      .then(() => this.writeByte(MPR121_FDLT, 0x00))
+      .then(() => this.writeByte(MPR121_FDLT, 0x00)) // filter rate. (0-255, 255 is slowest)
+      // --
       .then(() => this.writeByte(MPR121_DEBOUNCE, 0))
       .then(() => this.writeByte(MPR121_CONFIG1, 0x10)) // default, 16uA charge current
       .then(() => this.writeByte(MPR121_CONFIG2, 0x20)) // 0.5uS encoding, 1ms period
