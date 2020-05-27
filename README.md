@@ -22,10 +22,30 @@ sudo apt-get install i2c-tools
 
 Make sure you follow these [steps to enable autoloading of I2C Kernel module](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c#installing-kernel-support-with-raspi-config-5-4).
 
-Install Node.js if not yet installed, e.g. to install Node v10:
+#### Node.js install
+
+Install Node.js if not yet installed.
+
+##### Raspberry Pi Zero - Node.js install
+
+To install Node v11, which supports Zero's ARMv6 processor:
 
 ```sh
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+curl -O https://nodejs.org/dist/latest-v11.x/node-v11.15.0-linux-armv6l.tar.gz
+tar -xvzf node-v11.15.0-linux-armv6l.tar.gz
+
+sudo cp -r node-v11.15.0-linux-armv6l/* /usr/local/
+
+$ node -v
+v11.15.0
+```
+
+##### Other Raspberry Pi - Node.js install
+
+For example to install Node v11:
+
+```sh
+curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
@@ -39,8 +59,10 @@ You can check Node version like this:
 
 ```sh
 node -v
-# v10.11.0
+# v11.15.0
 ```
+
+#### Install in your application
 
 To install `adafruit-mpr121` in your own Node app:
 
