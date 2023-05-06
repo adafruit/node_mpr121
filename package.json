@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/adafruit/node_mpr121",
   "dependencies": {
-    "i2c-bus": "^5.2.1"
+    "i2c-bus": "^5.2.2"
   }
 }
